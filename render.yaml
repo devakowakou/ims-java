@@ -1,37 +1,7 @@
 services:
   - type: web
     name: inventory-backend
-    runtime: java
-    plan: free
-    
-    # Commandes de build et démarrage
-    buildCommand: mvn clean package -DskipTests
-    startCommand: java -jar target/InventoryManagementSystem-0.0.1-SNAPSHOT.jar
-    
-    # Branche GitHub
+    dockerfilePath: Dockerfile.prod
+    port: 5050
+    env: java
     branch: dev
-    
-    # Variables d'environnement
-    envVars:
-      - key: PORT
-        value: 5050
-      
-      - key: DB_URL
-        value: jdbc:mysql://sql3.freesqldatabase.com:3306/sql3803301
-      
-      - key: DB_USERNAME
-        value: sql3803301
-      
-      - key: DB_PASSWORD
-        value: NACZsfgRRz
-      
-      - key: JWT_SECRET
-        value: Sindhu1431Sindhu2901SecureJWTKey1234
-      
-      - key: JAVA_VERSION
-        value: 21
-      -  
-      - key: JWT_EXPIRATION_MS
-        value: 15552000000
-    
-    autoDeploy: true
