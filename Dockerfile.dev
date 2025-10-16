@@ -1,35 +1,44 @@
-# Utiliser une image Java avec Maven préinstallé
+# Étape 1 : Build avec Maven
 FROM maven:3.9.6-eclipse-temurin-21 AS build
 
-# Définir le répertoire de travail
 WORKDIR /app
 
-# Copier les fichiers de configuration Maven
+# Copier les fichiers Maven
 COPY pom.xml ./
 COPY .mvn/ .mvn/
 COPY mvnw ./
 
-# Télécharger les dépendances (met le cache Maven en place)
+# Télécharger les dépendances pour cache
 RUN mvn dependency:go-offline
 
 # Copier le code source
 COPY src ./src
 
-# Construire l'application
+# Construire l'application sans tests
 RUN mvn clean package -DskipTests
 
 # ----------------------------
-# Étape d'exécution (runtime)
+# Étape 2 : Runtime
 # ----------------------------
 FROM eclipse-temurin:21-jdk
 
 WORKDIR /app
 
-# Copier le JAR construit depuis l’étape précédente
+# Copier le JAR construit
 COPY --from=build /app/target/*.jar app.jar
 
-# Exposer le port
-EXPOSE 5050
+# Exposer le port (Render utilise $PORT si défini)
+ENV PORT=5050
+EXPOSE $PORT
 
-# Commande par défaut pour lancer l’application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Variables d'environnement pour la base et JWT
+# Render te permet de définir ces variables via le dashboard (pas besoin de .env dans le repo)
+ENV DB_URL=${DB_URL}
+ENV DB_USERNAME=${DB_USERNAME}
+ENV DB_PASSWORD=${DB_PASSWORD}
+ENV JWT_SECRET=${JWT_SECRET}
+ENV JWT_EXPIRATION_MS=${JWT_EXPIRATION_MS}
+ENV PORT=${PORT}
+
+# Lancer l’application avec le port configuré
+ENTRYPOINT ["sh", "-c", "java -jar app.jar --server.port=$PORT"]
