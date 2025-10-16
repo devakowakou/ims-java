@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # Base de données MySQL
+  mysql:
+    image: mysql:8
+    container_name: inventory_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: inventorydb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: amede0430
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - inventory_network
+
+  # Application en mode développement
+  app-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: inventory_app_dev
+    restart: unless-stopped
+    ports:
+      - "5050:5050"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/inventorydb
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: amede0430
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: true
+    volumes:
+      - ./src:/app/src  # Pour hot reload
+    depends_on:
+      - mysql
+    networks:
+      - inventory_network
+    profiles:
+      - dev
+
+  # Application en mode production
+  app-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: inventory_app_prod
+    restart: unless-stopped
+    ports:
+      - "5051:5050"  # Port différent pour prod
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/inventorydb
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: amede0430
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_JPA_SHOW_SQL: false
+    depends_on:
+      - mysql
+    networks:
+      - inventory_network
+    profiles:
+      - prod
+
+volumes:
+  mysql_data:
+
+networks:
+  inventory_network:
+    driver: bridge

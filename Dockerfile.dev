@@ -1,0 +1,25 @@
+# Utiliser une image Java avec Maven pour le développement
+FROM openjdk:21-jdk
+
+# Installer Maven
+RUN apt-get update && apt-get install -y maven
+
+# Définir le répertoire de travail
+WORKDIR /app
+
+# Copier les fichiers de configuration Maven
+COPY pom.xml ./
+COPY .mvn/ .mvn/
+COPY mvnw ./
+
+# Télécharger les dépendances
+RUN ./mvnw dependency:go-offline
+
+# Copier le code source
+COPY src ./src
+
+# Exposer le port
+EXPOSE 5050
+
+# Commande par défaut pour démarrer en mode développement
+CMD ["./mvnw", "spring-boot:run"]
