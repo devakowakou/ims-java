@@ -23,12 +23,15 @@ services:
         value: sql3803301
       
       - key: DB_PASSWORD
-        sync: false
+        value: NACZsfgRRz
       
       - key: JWT_SECRET
-        sync: false
+        value: Sindhu1431Sindhu2901SecureJWTKey1234
       
       - key: JAVA_VERSION
         value: 21
+      -  
+      - key: JWT_EXPIRATION_MS
+        value: 15552000000
     
     autoDeploy: true
