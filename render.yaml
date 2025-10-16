@@ -9,7 +9,7 @@ services:
     startCommand: java -jar target/InventoryManagementSystem-0.0.1-SNAPSHOT.jar
     
     # Branche GitHub
-    branch: master
+    branch: dev
     
     # Variables d'environnement
     envVars:
