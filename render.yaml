@@ -1,8 +1,34 @@
 services:
   - type: web
-    name: inventory-management-system
-    dockerfilePath: Dockerfile.prod
-    port: 5050
-    env: java
-    buildCommand: ""  # Utilise le Dockerfile, donc pas besoin de commande de build ici
-    startCommand: ""  # Le CMD du Dockerfile s'en charge
+    name: inventory-backend
+    runtime: java
+    plan: free
+    
+    # Commandes de build et démarrage
+    buildCommand: mvn clean package -DskipTests
+    startCommand: java -jar target/InventoryManagementSystem-0.0.1-SNAPSHOT.jar
+    
+    # Branche GitHub
+    branch: master
+    
+    # Variables d'environnement
+    envVars:
+      - key: PORT
+        value: 5050
+      
+      - key: DB_URL
+        value: jdbc:mysql://sql3.freesqldatabase.com:3306/sql3803301
+      
+      - key: DB_USERNAME
+        value: sql3803301
+      
+      - key: DB_PASSWORD
+        sync: false
+      
+      - key: JWT_SECRET
+        sync: false
+      
+      - key: JAVA_VERSION
+        value: 21
+    
+    autoDeploy: true
