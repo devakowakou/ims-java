@@ -1,8 +1,5 @@
-# Utiliser une image Java avec Maven pour le développement
-FROM openjdk:21-jdk
-
-# Installer Maven
-RUN apt-get update && apt-get install -y maven
+# Utiliser une image Java avec Maven préinstallé
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 
 # Définir le répertoire de travail
 WORKDIR /app
@@ -12,14 +9,27 @@ COPY pom.xml ./
 COPY .mvn/ .mvn/
 COPY mvnw ./
 
-# Télécharger les dépendances
-RUN ./mvnw dependency:go-offline
+# Télécharger les dépendances (met le cache Maven en place)
+RUN mvn dependency:go-offline
 
 # Copier le code source
 COPY src ./src
 
+# Construire l'application
+RUN mvn clean package -DskipTests
+
+# ----------------------------
+# Étape d'exécution (runtime)
+# ----------------------------
+FROM eclipse-temurin:21-jdk
+
+WORKDIR /app
+
+# Copier le JAR construit depuis l’étape précédente
+COPY --from=build /app/target/*.jar app.jar
+
 # Exposer le port
 EXPOSE 5050
 
-# Commande par défaut pour démarrer en mode développement
-CMD ["./mvnw", "spring-boot:run"]
+# Commande par défaut pour lancer l’application
+ENTRYPOINT ["java", "-jar", "app.jar"]
