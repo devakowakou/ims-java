@@ -1,7 +1,7 @@
 services:
   - type: web
     name: inventory-backend
-    dockerfilePath: Dockerfile.prod
-    port: 5050
-    env: java
+    env: docker
+    dockerfilePath: Dockerfile.dev
     branch: dev
+    port: 5050
