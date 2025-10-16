@@ -5,3 +5,17 @@ services:
     dockerfilePath: Dockerfile.dev
     branch: dev
     port: 5050
+
+    envVars:
+      - key: DB_URL
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRATION_MS
+        sync: false
+      - key: PORT
+        sync: false
