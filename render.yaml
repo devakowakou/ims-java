@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: inventory-management-system
+    dockerfilePath: Dockerfile.prod
+    port: 5050
+    env: java
+    buildCommand: ""  # Utilise le Dockerfile, donc pas besoin de commande de build ici
+    startCommand: ""  # Le CMD du Dockerfile s'en charge

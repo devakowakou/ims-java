@@ -149,7 +149,7 @@ Pour déployer en production :
 4. Déployez le JAR généré
 
 ## Captures d'Écran
-Le dossier `ScreenShots/` contient des exemples d'interface utilisateur.
+Le dossier `screen/` contient des exemples d'interface utilisateur.
 
 ## Images de Produits
 Le dossier `product-images/` contient les images uploadées pour les produits.

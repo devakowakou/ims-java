@@ -3,8 +3,8 @@ package com.Sindev.InventoryManagementSystem.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -16,18 +16,16 @@ import java.util.function.Function;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class JwtUtils {
 
-    private static final long EXPIRATION_TIME_IN_MILLISEC = 1000L * 60L * 60L * 24L * 30L * 6L; //expires in 6 month in milliseconds
+    private final JwtConfig jwtConfig;
 
     private SecretKey key;
 
-    @Value("${secreteJwtString}")
-    private String secreteJwtString;
-
     @PostConstruct
     private void init(){
-        byte[] keyByte = secreteJwtString.getBytes(StandardCharsets.UTF_8);
+        byte[] keyByte = jwtConfig.getSecret().getBytes(StandardCharsets.UTF_8);
         this.key = new SecretKeySpec(keyByte, "HmacSHA256");
     }
 
@@ -35,10 +33,9 @@ public class JwtUtils {
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME_IN_MILLISEC))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtConfig.getExpirationMs()))
                 .signWith(key)
                 .compact();
-
     }
 
     public String getUsernameFromToken(String token){
@@ -62,5 +59,4 @@ public class JwtUtils {
     private boolean isTokenExpired(String token){
         return extractClaims(token, Claims::getExpiration).before(new Date());
     }
-
 }
